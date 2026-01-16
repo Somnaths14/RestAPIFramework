@@ -1,0 +1,32 @@
+Request method:	POST
+Request URI:	https://rahulshettyacademy.com/maps/api/place/add/json?key=qaclick123
+Proxy:			<none>
+Request params:	<none>
+Query params:	key=qaclick123
+Form params:	<none>
+Path params:	<none>
+Headers:		Accept=*/*
+				Content-Type=text/plain; charset=ISO-8859-1
+Cookies:		<none>
+Multiparts:		<none>
+Body:
+{"location":{"lat":60,"lng":60},"accuracy":50,"name":"Somnath","phone_number":"7358079540","address":"one 10","website":null,"language":null,"types":["shoe park","shop"]}
+HTTP/1.1 200 OK
+Date: Fri, 16 Jan 2026 19:42:21 GMT
+Server: Apache/2.4.52 (Ubuntu)
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: POST
+Access-Control-Max-Age: 3600
+Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With
+Content-Length: 194
+Keep-Alive: timeout=5, max=100
+Connection: Keep-Alive
+Content-Type: application/json;charset=UTF-8
+
+{
+    "status": "OK",
+    "place_id": "8e9f5d879d5bd728e0f2302762304008",
+    "scope": "APP",
+    "reference": "950aa3046db7851e4db10b1ad3fa8d8a950aa3046db7851e4db10b1ad3fa8d8a",
+    "id": "950aa3046db7851e4db10b1ad3fa8d8a"
+}
