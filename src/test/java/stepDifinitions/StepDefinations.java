@@ -1,62 +1,52 @@
 package stepDifinitions;
 
-import java.util.ArrayList;
+import java.io.IOException;
 
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.restassured.RestAssured;
 import static io.restassured.RestAssured.*;
 import static org.junit.Assert.*;
-import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.builder.ResponseSpecBuilder;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
-import pojo.AddPlace;
-import pojo.Location;
+import resources.EnumClass;
+import resources.TestDataBuilder;
+import resources.Utility;
 
-public class StepDefinations {
+public class StepDefinations extends Utility {
 
 	RequestSpecification reqst;
 	ResponseSpecification res;
 	Response response;
+	TestDataBuilder td;
+	static String placeId;
 
-	@Given("User add the payload json")
-	public void user_add_the_payload_json() {
+	@Given("User add the payload json with {string} , {string} and {string}")
+	public void user_add_the_payload_json_with_and(String name, String address, String phone) throws IOException {
 
-		// creating object of POJO classes
-		AddPlace ap = new AddPlace();
-		Location l = new Location();
+		td = new TestDataBuilder();
 
-		l.setLat(60);
-		l.setLng(60);
-
-		ap.setLocation(l);
-		ap.setAccuracy(50);
-		ap.setName("Somnath");
-		ap.setPhone_number("7358079540");
-		ap.setAddress("one 10");
-
-		ArrayList<String> al = new ArrayList<>();
-		al.add("shoe park");
-		al.add("shop");
-		ap.setTypes(al); // As Types is List of string
-
-		RequestSpecification req = new RequestSpecBuilder().setBaseUri("https://rahulshettyacademy.com")
-				.addQueryParam("key", "qaclick123").build();
-
-		reqst = given().spec(req).body(ap);
+		reqst = given().spec(ReqstSpecificatn()).body(td.AddPlacePayload(name, address, phone));
 
 	}
 
-	@When("User calls the {string} API with http method")
-	public void user_calls_the_api_with_http_method(String string) {
+	@When("User calls the {string} API with http {string} method")
+	public void user_calls_the_api_with_http_post_method(String apiName, String httpMethod) {
+
+		String apiResource = EnumClass.valueOf(apiName).getResource();
 
 		res = new ResponseSpecBuilder().expectStatusCode(200).build();
-		response = reqst.when().post("/maps/api/place/add/json").then().spec(res).assertThat().extract().response();
+		if (httpMethod.equalsIgnoreCase("POST"))
+			response = reqst.when().post(apiResource).then().spec(res).assertThat().extract().response();
+		else if (httpMethod.equalsIgnoreCase("GET"))
+			response = reqst.when().get(apiResource).then().spec(res).assertThat().extract().response();
+		else if (httpMethod.equalsIgnoreCase("DELETE"))
+			response = reqst.when().delete(apiResource).then().spec(res).assertThat().extract().response();
+
 	}
 
 	@Then("User get the response with status code {int}")
@@ -67,11 +57,33 @@ public class StepDefinations {
 
 	@And("User verify {string} is {string}")
 	public void user_verify_is(String key, String val) {
-		String responseString = response.asString();
-		JsonPath js = new JsonPath(responseString);
 
-		String actualvalue = js.getString(key);
-
+		String actualvalue = ResponseValueGetter(response, key);
+		System.out.println(actualvalue);
 		assertEquals(val, actualvalue);
 	}
+
+	@Then("User validate the {string} has same {string} , {string} and {string}")
+	public void user_validate_the_has_same_and(String place_id, String name, String address, String phone)
+			throws IOException {
+
+		placeId = ResponseValueGetter(response, place_id);
+		reqst = given().spec(ReqstSpecificatn()).queryParam("place_id", placeId);
+
+		user_calls_the_api_with_http_post_method("getPlaceAPI", "GET");
+		user_get_the_response_with_status_code(200);
+		user_verify_is("name", name);
+		user_verify_is("address", address);
+		user_verify_is("phone_number", phone);
+
+	}
+
+	@Given("User calls the {string} API with http {string} method with place_id")
+	public void user_calls_the_api_with_http_method_with_place_id(String deleteAPI, String postmethod)
+			throws IOException {
+		reqst = given().spec(ReqstSpecificatn()).body(deleteJsonBody(placeId));
+		user_calls_the_api_with_http_post_method(deleteAPI, postmethod);
+		
+	}
+
 }

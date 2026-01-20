@@ -7,7 +7,7 @@ import pojo.Location;
 
 public class TestDataBuilder {
 
-	public AddPlace AddPlacePayload() {
+	public AddPlace AddPlacePayload(String name, String address, String phone) {
 		AddPlace ap = new AddPlace();
 		Location l = new Location();
 
@@ -16,9 +16,9 @@ public class TestDataBuilder {
 
 		ap.setLocation(l);
 		ap.setAccuracy(50);
-		ap.setName("Somnath");
-		ap.setPhone_number("7358079540");
-		ap.setAddress("one 10");
+		ap.setName(name);
+		ap.setPhone_number(phone);
+		ap.setAddress(address);
 
 		ArrayList<String> al = new ArrayList<>();
 		al.add("shoe park");
